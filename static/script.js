@@ -427,12 +427,13 @@ function updateExample() {
           Weak: 2, Strong: 3 }
   };
 
-  const pYes = (9/14) * (data.Yes[o]/9) * (data.Yes[t]/9) * (data.Yes[h]/9) * (data.Yes[w]/9);
-  const pNo = (5/14) * (data.No[o]/5) * (data.No[t]/5) * (data.No[h]/5) * (data.No[w]/5);
+  const eps = 1e-12;
+  const pYes = Math.log(9/14) + Math.log(data.Yes[o]/9 + eps) + Math.log(data.Yes[t]/9 + eps) + Math.log(data.Yes[h]/9 + eps) + Math.log(data.Yes[w]/9 + eps);
+  const pNo = Math.log(5/14) + Math.log(data.No[o]/5 + eps) + Math.log(data.No[t]/5 + eps) + Math.log(data.No[h]/5 + eps) + Math.log(data.No[w]/5 + eps);
 
-  document.getElementById('ex-calc-yes').innerHTML = `P(Yes|...) ∝ P(Yes) &times; P(${o}|Yes) &times; P(${t}|Yes) &times; P(${h}|Yes) &times; P(${w}|Yes)<br>= 9/14 &times; ${data.Yes[o]}/9 &times; ${data.Yes[t]}/9 &times; ${data.Yes[h]}/9 &times; ${data.Yes[w]}/9 = ${pYes.toFixed(4)}`;
+  document.getElementById('ex-calc-yes').innerHTML = `log P(Yes|...) ∝ log P(Yes) + log P(${o}|Yes) + log P(${t}|Yes) + log P(${h}|Yes) + log P(${w}|Yes)<br>= ${Math.log(9/14).toFixed(2)} + ${Math.log(data.Yes[o]/9 + eps).toFixed(2)} + ${Math.log(data.Yes[t]/9 + eps).toFixed(2)} + ${Math.log(data.Yes[h]/9 + eps).toFixed(2)} + ${Math.log(data.Yes[w]/9 + eps).toFixed(2)} = ${pYes.toFixed(4)}`;
   
-  document.getElementById('ex-calc-no').innerHTML = `P(No|...) ∝ P(No) &times; P(${o}|No) &times; P(${t}|No) &times; P(${h}|No) &times; P(${w}|No)<br>= 5/14 &times; ${data.No[o]}/5 &times; ${data.No[t]}/5 &times; ${data.No[h]}/5 &times; ${data.No[w]}/5 = ${pNo.toFixed(4)}`;
+  document.getElementById('ex-calc-no').innerHTML = `log P(No|...) ∝ log P(No) + log P(${o}|No) + log P(${t}|No) + log P(${h}|No) + log P(${w}|No)<br>= ${Math.log(5/14).toFixed(2)} + ${Math.log(data.No[o]/5 + eps).toFixed(2)} + ${Math.log(data.No[t]/5 + eps).toFixed(2)} + ${Math.log(data.No[h]/5 + eps).toFixed(2)} + ${Math.log(data.No[w]/5 + eps).toFixed(2)} = ${pNo.toFixed(4)}`;
 
   const finalStr = pYes > pNo ? `<span class="badge-yes">Play = Yes</span>` : `<span class="badge-no">Play = No</span>`;
   document.getElementById('ex-final').innerHTML = `Since ${Math.max(pYes,pNo).toFixed(4)} > ${Math.min(pYes,pNo).toFixed(4)} &rarr; ${finalStr}`;
@@ -442,7 +443,7 @@ document.addEventListener('DOMContentLoaded', updateExample);
 
 // ---- Detailed Per-Sample Calculations ----
 function renderDetailedCalculations(calculations, classes, featureNames) {
-  let html = '<p style="margin-bottom:1rem;color:var(--text2)">For each sample, we compute: <strong>P(C|X) ∝ P(C) × Π P(xᵢ|C)</strong> using Gaussian PDF. Click any sample to expand its full calculation.</p>';
+  let html = '<p style="margin-bottom:1rem;color:var(--text2)">For each sample, we compute: <strong>log P(C|X) ∝ log P(C) + Σ log P(xᵢ|C)</strong> using Gaussian PDF. Logs prevent numerical underflow.</p>';
 
   calculations.forEach((sc) => {
     const isCorrect = sc.predicted === sc.actual;
@@ -477,8 +478,8 @@ function renderDetailedCalculations(calculations, classes, featureNames) {
 
       // Step A: Prior
       html += `<div class="calc-line">
-          <span class="calc-step-tag">Prior</span>
-          <span class="calc-formula">P(${cls}) = <strong>${cc.prior}</strong></span>
+          <span class="calc-step-tag">log Prior</span>
+          <span class="calc-formula">log P(${cls}) = <strong>${Math.log(cc.prior + 1e-12).toFixed(4)}</strong></span>
         </div>`;
 
       // Step B: Gaussian likelihood for each feature
@@ -493,11 +494,11 @@ function renderDetailedCalculations(calculations, classes, featureNames) {
         </div>`;
       });
 
-      // Step C: Product
+      // Step C: Log-Sum
       html += `<div class="calc-line calc-product-line">
-          <span class="calc-step-tag">Posterior</span>
+          <span class="calc-step-tag">Log Posterior</span>
           <span class="calc-formula">
-            P(${cls}) × ${cc.likelihoods.map(lk => `P(${lk.feature}|${cls})`).join(' × ')} = <strong>${cc.raw_posterior.toExponential(6)}</strong>
+            log P(${cls}) + ${cc.likelihoods.map(lk => `log P(${lk.feature}|${cls})`).join(' + ')} = <strong>${cc.log_posterior}</strong>
           </span>
         </div>`;
 

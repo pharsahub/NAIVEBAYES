@@ -6,6 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score, confusion_matrix
 import io
 import json
+import math
 
 app = Flask(__name__)
 
@@ -71,15 +72,30 @@ def predict():
             'data': class_counts
         })
 
-        # Likelihood for each feature
+        # Pre-calculate Gaussian parameters with smoothing (identical to sklearn's GaussianNB)
+        # var_smoothing default is 1e-9. epsilon is 1e-9 * max variance of all features.
+        var_smoothing = 1e-9
+        max_var = np.var(X, axis=0).max() if X.shape[0] > 0 else 0
+        epsilon = var_smoothing * max_var
+
         likelihoods = {}
+        # Pre-calculated stats for Step 3 to ensure consistency
+        class_stats = {} 
+
         for cls_idx, cls_name in enumerate(classes):
             X_cls = X[y == cls_idx]
             likelihoods[cls_name] = {}
+            class_stats[cls_idx] = {}
+            
             for fi, fname in enumerate(feature_names):
-                mean = float(np.mean(X_cls[:, fi]))
-                std = float(np.std(X_cls[:, fi]) + 1e-9)
-                likelihoods[cls_name][fname] = {'mean': round(mean, 4), 'std': round(std, 4)}
+                mean = float(np.mean(X_cls[:, fi])) if X_cls.shape[0] > 0 else 0
+                # var = mean of squared deviations + epsilon
+                variance = float(np.var(X_cls[:, fi])) if X_cls.shape[0] > 0 else 0
+                smoothed_var = variance + epsilon
+                sigma = float(np.sqrt(smoothed_var))
+                
+                likelihoods[cls_name][fname] = {'mean': round(mean, 4), 'std': round(sigma, 4)}
+                class_stats[cls_idx][fi] = {'mean': mean, 'sigma': sigma, 'var': smoothed_var}
 
         steps.append({
             'title': 'Step 2: Gaussian Likelihood Parameters (Mean & Std per Class)',
@@ -99,14 +115,17 @@ def predict():
             for cls_idx, cls_name in enumerate(classes):
                 prior_val = class_counts[cls_name]['prior']
                 likelihood_parts = []
-                product = prior_val
+                log_product = math.log(prior_val)
                 for fi, fname in enumerate(feature_names):
                     x_val = float(X[si, fi])
-                    mu = float(np.mean(X[y == cls_idx][:, fi]))
-                    sigma = float(np.std(X[y == cls_idx][:, fi]) + 1e-9)
-                    # Gaussian PDF
-                    pdf = float((1 / (np.sqrt(2 * np.pi) * sigma)) * np.exp(-((x_val - mu)**2) / (2 * sigma**2)))
-                    product *= pdf
+                    stats = class_stats[cls_idx][fi]
+                    mu = stats['mean']
+                    sigma = stats['sigma']
+                    var = stats['var']
+                    
+                    # Gaussian PDF: (1 / sqrt(2*pi*var)) * exp(-(x-mu)^2 / (2*var))
+                    pdf = float((1 / (np.sqrt(2 * np.pi) * sigma)) * np.exp(-((x_val - mu)**2) / (2 * var)))
+                    log_product += math.log(pdf + 1e-12)
                     likelihood_parts.append({
                         'feature': fname,
                         'x': round(x_val, 4),
@@ -117,18 +136,32 @@ def predict():
                 sample_calc['class_calcs'][cls_name] = {
                     'prior': round(prior_val, 4),
                     'likelihoods': likelihood_parts,
-                    'raw_posterior': round(product, 10)
+                    'log_posterior': round(log_product, 6)
                 }
-            # Normalize
-            total_post = sum(v['raw_posterior'] for v in sample_calc['class_calcs'].values())
-            for cls_name in classes:
-                if total_post > 0:
-                    sample_calc['class_calcs'][cls_name]['normalized'] = round(
-                        sample_calc['class_calcs'][cls_name]['raw_posterior'] / total_post, 4)
+
+            # Normalize using log-sum-exp trick for numerical stability
+            log_posteriors = [v['log_posterior'] for v in sample_calc['class_calcs'].values()]
+            max_log = max(log_posteriors)
+            
+            # exp(log_p - max_log) for each class
+            exp_vals = {cls: math.exp(v['log_posterior'] - max_log) 
+                        for cls, v in sample_calc['class_calcs'].items()}
+            sum_exp = sum(exp_vals.values())
+            
+            # Use remainder adjustment to ensure sum is exactly 1.0 (100%)
+            current_sum = 0
+            for i, cls_name in enumerate(classes):
+                if i < len(classes) - 1:
+                    val = round(exp_vals[cls_name] / sum_exp, 4) if sum_exp > 0 else 0
+                    sample_calc['class_calcs'][cls_name]['normalized'] = val
+                    current_sum += val
                 else:
-                    sample_calc['class_calcs'][cls_name]['normalized'] = 0
+                    # Final class takes the remainder to ensure exact 100% total
+                    remainder = round(1.0 - current_sum, 4)
+                    sample_calc['class_calcs'][cls_name]['normalized'] = max(0, remainder)
+
             predicted_cls = max(sample_calc['class_calcs'],
-                                key=lambda c: sample_calc['class_calcs'][c]['raw_posterior'])
+                                key=lambda c: sample_calc['class_calcs'][c]['log_posterior'])
             sample_calc['predicted'] = predicted_cls
             sample_calc['actual'] = str(y_raw.iloc[si])
             sample_calculations.append(sample_calc)
@@ -147,13 +180,25 @@ def predict():
         # Build result rows
         result_rows = []
         for i in range(len(df)):
+            # Normalize sklearn proba to ensure exactly 1.0 sum after rounding
+            raw_probs = [float(proba[i][j]) for j in range(len(classes))]
+            current_sum = 0
+            rounded_probs = {}
+            for j, cls_name in enumerate(classes):
+                if j < len(classes) - 1:
+                    val = round(raw_probs[j], 4)
+                    rounded_probs[cls_name] = val
+                    current_sum += val
+                else:
+                    rounded_probs[cls_name] = round(1.0 - current_sum, 4)
+
             row = {
                 'index': i + 1,
                 'features': {feature_names[j]: str(X_raw.iloc[i, j]) for j in range(len(feature_names))},
                 'actual': str(y_raw.iloc[i]),
                 'predicted': str(predictions[i]),
                 'correct': str(y_raw.iloc[i]) == str(predictions[i]),
-                'probabilities': {classes[j]: round(float(proba[i][j]), 4) for j in range(len(classes))}
+                'probabilities': rounded_probs
             }
             result_rows.append(row)
 
