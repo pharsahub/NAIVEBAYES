@@ -6,17 +6,51 @@ let uploadedFile = null;
 const COLORS = ['#2563eb', '#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#64748b'];
 
 // ---- Navigation ----
-function showSection(id) {
+function scrollToSection(id) {
   const el = document.getElementById(id);
   if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 
   document.querySelectorAll('.nav-btn').forEach(b => {
     b.classList.remove('active');
-    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(`'${id}'`)) {
+    // Only 'Lab' can be active on scroll in this new layout
+    if (id === 'lab' && b.innerText.includes('Lab')) {
       b.classList.add('active');
     }
   });
 }
+
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('active'), 10);
+    document.body.style.overflow = 'hidden'; // Prevent background scroll
+  }
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.classList.remove('active');
+    setTimeout(() => {
+      modal.style.display = 'none';
+      document.body.style.overflow = ''; // Restore scroll
+    }, 300);
+  }
+}
+
+// Close modal on escape key or outside click
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.active').forEach(m => closeModal(m.id));
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('modal-overlay')) {
+    closeModal(e.target.id);
+  }
+});
 
 // ---- File Handling ----
 function handleFile(input) {

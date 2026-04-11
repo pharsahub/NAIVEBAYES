@@ -25,14 +25,15 @@
         </div>
       </div>
       <nav class="nav-bar">
-        <button class="nav-btn active" onclick="showSection('learn')">Learn</button>
-        <button class="nav-btn" onclick="showSection('video')">Video</button>
-        <button class="nav-btn" onclick="showSection('lab')">Lab</button>
-        <button class="nav-btn" onclick="showSection('references')">References</button>
-        <button class="nav-btn" onclick="showSection('help')">Help</button>
-        <button class="nav-btn" onclick="window.open('https://vlab.co.in', '_blank')">Virtual Lab Reference</button>
+        <button class="nav-btn" onclick="openModal('modal-learn')">Learn & Tutorial</button>
+        <button class="nav-btn active" onclick="scrollToSection('lab')">Lab</button>
+        <button class="nav-btn" onclick="openModal('modal-references')">References</button>
+        <button class="nav-btn" onclick="openModal('modal-help')">Help</button>
+        <button class="nav-btn"
+          onclick="window.open('https://sites.google.com/view/swe2002/virtual-lab?authuser=0', '_blank')">Virtual Lab
+          Reference</button>
         <button class="nav-btn accent" onclick="downloadSample()">⬇ Dataset</button>
-        <button class="nav-btn ghost" onclick="showSection('about')">Developed By</button>
+        <button class="nav-btn ghost" onclick="openModal('modal-about')">Developed By</button>
       </nav>
     </div>
   </header>
@@ -45,8 +46,8 @@
       <h1 class="hero-title">Naive<br><span class="accent-text">Bayes</span></h1>
       <p class="hero-desc">Understand, visualize, and run the Naive Bayes classifier — interactively, step by step.</p>
       <div class="hero-cta">
-        <button class="cta-primary" onclick="showSection('lab')">→ Open Lab</button>
-        <button class="cta-secondary" onclick="showSection('learn')">Learn First</button>
+        <button class="cta-primary" onclick="scrollToSection('lab')">→ Open Lab</button>
+        <button class="cta-secondary" onclick="openModal('modal-learn')">Learn First</button>
       </div>
     </div>
     <div class="hero-formula">
@@ -58,302 +59,7 @@
     </div>
   </section>
 
-  <!-- ======= LEARN SECTION ======= -->
-  <section class="content-section" id="learn">
-    <div class="section-header">
-      <span class="section-tag">01 / CONCEPT</span>
-      <h2>What is Naive Bayes?</h2>
-    </div>
-    <div class="learn-grid">
-      <div class="learn-card">
-        <div class="card-num">01</div>
-        <h3>Definition</h3>
-        <p>Naive Bayes is a <strong>probabilistic classifier</strong> based on Bayes' theorem. It assumes all features
-          are <em>conditionally independent</em> given the class — the "naive" assumption. Despite this simplicity, it
-          performs well on text classification, spam filtering, and more.</p>
-      </div>
-      <div class="learn-card">
-        <div class="card-num">02</div>
-        <h3>Bayes' Theorem</h3>
-        <div class="formula-block">
-          <p class="formula-big">P(C|X) = P(X|C) × P(C) / P(X)</p>
-        </div>
-        <ul class="term-list">
-          <li><strong>P(C|X)</strong> — Posterior probability of class C given features X</li>
-          <li><strong>P(X|C)</strong> — Likelihood: probability of X given class C</li>
-          <li><strong>P(C)</strong> — Prior probability of class C</li>
-          <li><strong>P(X)</strong> — Evidence (constant, often ignored)</li>
-        </ul>
-      </div>
-      <div class="learn-card">
-        <div class="card-num">03</div>
-        <h3>Naive Assumption</h3>
-        <p>Features are assumed independent:</p>
-        <div class="formula-block">
-          <p class="formula-big">P(X|C) = P(x₁|C) × P(x₂|C) × ... × P(xₙ|C)</p>
-        </div>
-        <p>So: <strong>Prediction = argmax P(C) × Π P(xᵢ|C)</strong></p>
-      </div>
-      <div class="learn-card">
-        <div class="card-num">04</div>
-        <h3>Gaussian Naive Bayes</h3>
-        <p>For continuous features, assume Gaussian distribution:</p>
-        <div class="formula-block">
-          <p class="formula-big">P(xᵢ|C) = (1/√2πσ²) × e^(-(xᵢ−μ)²/2σ²)</p>
-        </div>
-        <p>Mean (μ) and variance (σ²) are estimated from training data per class.</p>
-      </div>
-    </div>
-
-    <!-- Worked Example -->
-    <div class="example-block">
-      <div class="section-header">
-        <span class="section-tag">WORKED EXAMPLE</span>
-        <h2>Play Tennis Dataset</h2>
-      </div>
-      <div class="example-inner">
-        <div class="example-table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Outlook</th>
-                <th>Temperature</th>
-                <th>Humidity</th>
-                <th>Wind</th>
-                <th>Play?</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>Sunny</td>
-                <td>Hot</td>
-                <td>High</td>
-                <td>Weak</td>
-                <td class="no">No</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Sunny</td>
-                <td>Hot</td>
-                <td>High</td>
-                <td>Strong</td>
-                <td class="no">No</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Overcast</td>
-                <td>Hot</td>
-                <td>High</td>
-                <td>Weak</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>Rainy</td>
-                <td>Mild</td>
-                <td>High</td>
-                <td>Weak</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td>Rainy</td>
-                <td>Cool</td>
-                <td>Normal</td>
-                <td>Weak</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>6</td>
-                <td>Rainy</td>
-                <td>Cool</td>
-                <td>Normal</td>
-                <td>Strong</td>
-                <td class="no">No</td>
-              </tr>
-              <tr>
-                <td>7</td>
-                <td>Overcast</td>
-                <td>Cool</td>
-                <td>Normal</td>
-                <td>Strong</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>8</td>
-                <td>Sunny</td>
-                <td>Mild</td>
-                <td>High</td>
-                <td>Weak</td>
-                <td class="no">No</td>
-              </tr>
-              <tr>
-                <td>9</td>
-                <td>Sunny</td>
-                <td>Cool</td>
-                <td>Normal</td>
-                <td>Weak</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>10</td>
-                <td>Rainy</td>
-                <td>Mild</td>
-                <td>Normal</td>
-                <td>Weak</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>11</td>
-                <td>Sunny</td>
-                <td>Mild</td>
-                <td>Normal</td>
-                <td>Strong</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>12</td>
-                <td>Overcast</td>
-                <td>Mild</td>
-                <td>High</td>
-                <td>Strong</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>13</td>
-                <td>Overcast</td>
-                <td>Hot</td>
-                <td>Normal</td>
-                <td>Weak</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>14</td>
-                <td>Rainy</td>
-                <td>Mild</td>
-                <td>High</td>
-                <td>Strong</td>
-                <td class="no">No</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="example-steps">
-          <div class="step-card">
-            <div class="step-num">S1</div>
-            <div>
-              <strong>Prior Probabilities</strong>
-              <div class="prob-bars">
-                <div class="prob-row"><span>P(Yes) = 9/14</span>
-                  <div class="bar">
-                    <div class="fill yes-fill" style="width:64%">64%</div>
-                  </div>
-                </div>
-                <div class="prob-row"><span>P(No) = 5/14</span>
-                  <div class="bar">
-                    <div class="fill no-fill" style="width:36%">36%</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="step-card">
-            <div class="step-num">S2</div>
-            <div>
-              <strong style="margin-bottom:0.25rem;">Interactive Predictor</strong>
-              <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem; font-size:11px;">
-                <select id="ex-outlook" onchange="updateExample()"
-                  style="padding:2px; border:1px solid var(--border); border-radius:4px;">
-                  <option>Sunny</option>
-                  <option>Overcast</option>
-                  <option>Rainy</option>
-                </select>
-                <select id="ex-temp" onchange="updateExample()"
-                  style="padding:2px; border:1px solid var(--border); border-radius:4px;">
-                  <option>Hot</option>
-                  <option>Mild</option>
-                  <option>Cool</option>
-                </select>
-                <select id="ex-hum" onchange="updateExample()"
-                  style="padding:2px; border:1px solid var(--border); border-radius:4px;">
-                  <option>High</option>
-                  <option>Normal</option>
-                </select>
-                <select id="ex-wind" onchange="updateExample()"
-                  style="padding:2px; border:1px solid var(--border); border-radius:4px;">
-                  <option>Weak</option>
-                  <option>Strong</option>
-                </select>
-              </div>
-              <p class="step-text" id="ex-calc-yes"
-                style="font-family:var(--font-mono); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                P(Yes|...) ∝ P(Yes) × P(Sunny|Yes) × P(Hot|Yes) × P(High|Yes) × P(Weak|Yes)<br>= 9/14 × 2/9 × 2/9 × 3/9
-                × 6/9 = 0.0071</p>
-              <p class="step-text" id="ex-calc-no"
-                style="font-family:var(--font-mono); font-size:11px; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                P(No|...) ∝ P(No) × P(Sunny|No) × P(Hot|No) × P(High|No) × P(Weak|No)<br>= 5/14 × 3/5 × 2/5 × 4/5 × 2/5
-                = 0.0274</p>
-            </div>
-          </div>
-          <div class="step-card highlight-card">
-            <div class="step-num" style="background:var(--accent3);">→</div>
-            <div>
-              <strong>Final Prediction</strong>
-              <p class="step-text" id="ex-final">Since 0.0274 > 0.0071 → <span class="badge-no">Play = No</span></p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Types of NB -->
-    <div class="types-grid">
-      <div class="type-card">
-        <div class="type-icon">G</div>
-        <h4>Gaussian NB</h4>
-        <p>Continuous features. Assumes normal distribution.</p>
-      </div>
-      <div class="type-card">
-        <div class="type-icon">M</div>
-        <h4>Multinomial NB</h4>
-        <p>Discrete counts. Common in text classification.</p>
-      </div>
-      <div class="type-card">
-        <div class="type-icon">B</div>
-        <h4>Bernoulli NB</h4>
-        <p>Binary features (yes/no, 0/1).</p>
-      </div>
-      <div class="type-card">
-        <div class="type-icon">C</div>
-        <h4>Complement NB</h4>
-        <p>Variant for imbalanced datasets.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ======= VIDEO SECTION ======= -->
-  <section class="content-section" id="video">
-    <div class="section-header">
-      <span class="section-tag">02 / VIDEO</span>
-      <h2>Video Lecture</h2>
-    </div>
-    <div class="video-wrap">
-      <iframe width="100%" height="500" src="https://www.youtube.com/embed/O2L2Uv9pdDA"
-        title="Naive Bayes Classifier Explained" frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-      </iframe>
-    </div>
-    <div class="video-meta">
-      <h3>Naive Bayes Classifier — Complete Explanation</h3>
-      <p>This video covers the mathematical foundation, worked examples, and Python implementation of Naive Bayes. Watch
-        before proceeding to the lab for best results.</p>
-    </div>
-  </section>
-
-  <!-- ======= LAB SECTION ======= -->
+  <!-- ======= LAB SECTION (MAIN PAGE) ======= -->
   <section class="content-section" id="lab">
     <div class="section-header">
       <span class="section-tag">03 / LAB</span>
@@ -441,154 +147,378 @@
     </div>
   </section>
 
-  <!-- ======= REFERENCES ======= -->
-  <section class="content-section" id="references">
-    <div class="section-header">
-      <span class="section-tag">04 / REFERENCES</span>
-      <h2>References</h2>
-    </div>
-    <div class="ref-list">
-      <div class="ref-card">
-        <div class="ref-num">01</div>
-        <div>
-          <div class="ref-title">scikit-learn: Naive Bayes Documentation</div>
-          <div class="ref-url">https://scikit-learn.org/stable/modules/naive_bayes.html</div>
-          <p>Official documentation for GaussianNB, MultinomialNB, BernoulliNB implementations in Python.</p>
-        </div>
-      </div>
-      <div class="ref-card">
-        <div class="ref-num">02</div>
-        <div>
-          <div class="ref-title">Mitchell, T. M. (1997). Machine Learning. McGraw-Hill.</div>
-          <div class="ref-url">Chapter 6: Bayesian Learning</div>
-          <p>Foundational textbook chapter covering Bayes theorem, MAP hypothesis, and Naive Bayes classifiers.</p>
-        </div>
-      </div>
-      <div class="ref-card">
-        <div class="ref-num">03</div>
-        <div>
-          <div class="ref-title">Wikipedia — Naive Bayes Classifier</div>
-          <div class="ref-url">https://en.wikipedia.org/wiki/Naive_Bayes_classifier</div>
-          <p>Comprehensive overview with mathematical formulation, types, and applications.</p>
-        </div>
-      </div>
-      <div class="ref-card">
-        <div class="ref-num">04</div>
-        <div>
-          <div class="ref-title">Bishop, C. M. (2006). Pattern Recognition and Machine Learning. Springer.</div>
-          <div class="ref-url">Section 4.2: Probabilistic Generative Models</div>
-          <p>Graduate-level treatment of Bayesian classifiers and probabilistic graphical models.</p>
-        </div>
-      </div>
-      <div class="ref-card">
-        <div class="ref-num">05</div>
-        <div>
-          <div class="ref-title">NPTEL Virtual Labs — Machine Learning</div>
-          <div class="ref-url">https://vlab.co.in</div>
-          <p>Government of India initiative providing virtual laboratory environments for ML experiments.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- ======= MODALS ======= -->
 
-  <!-- ======= HELP SECTION ======= -->
-  <section class="content-section" id="help">
-    <div class="section-header">
-      <span class="section-tag">05 / HELP</span>
-      <h2>How to Use This Lab</h2>
-    </div>
-    <div class="help-grid">
-      <div class="help-card">
-        <div class="help-step">1</div>
-        <h3>Prepare Your Dataset</h3>
-        <p>Your CSV file must follow this format:</p>
-        <div class="code-block">Feature1, Feature2, ..., Label
-          Sunny, Hot, High, Yes
-          Rainy, Cool, Normal, No</div>
-        <ul>
-          <li>Last column must be the <strong>target label</strong></li>
-          <li>All other columns are features</li>
-          <li>Both numeric and text values supported</li>
-          <li>First row must be column headers</li>
-        </ul>
-      </div>
-      <div class="help-card">
-        <div class="help-step">2</div>
-        <h3>Upload or Use Sample</h3>
-        <p>Go to the <strong>Lab</strong> section and either:</p>
-        <ul>
-          <li>Click <em>Upload Dataset</em> to use your own CSV</li>
-          <li>Click <em>Download Sample Dataset</em> for a ready-made example</li>
-          <li>Click <em>Try Demo</em> to auto-run without uploading</li>
-        </ul>
-      </div>
-      <div class="help-card">
-        <div class="help-step">3</div>
-        <h3>Run the Model</h3>
-        <p>Click <strong>Run Naive Bayes</strong> to:</p>
-        <ul>
-          <li>Train a Gaussian Naive Bayes model</li>
-          <li>See step-by-step probability calculations</li>
-          <li>View accuracy, confusion matrix, prediction table</li>
-          <li>Inspect per-sample class probabilities</li>
-        </ul>
-      </div>
-      <div class="help-card">
-        <div class="help-step">4</div>
-        <h3>Understand the Output</h3>
-        <ul>
-          <li><strong>Accuracy</strong> — % of correct predictions</li>
-          <li><strong>Prior</strong> — class frequency in training data</li>
-          <li><strong>Likelihood</strong> — Gaussian parameters per class/feature</li>
-          <li><strong>Confusion Matrix</strong> — actual vs predicted breakdown</li>
-          <li><strong>Green rows</strong> — correct predictions; <strong>Red rows</strong> — errors</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+  <!-- Learn & Tutorial Modal -->
+  <div class="modal-overlay" id="modal-learn">
+    <div class="modal-container">
+      <button class="modal-close" onclick="closeModal('modal-learn')">&times;</button>
+      <div class="modal-body">
+        <div class="section-header">
+          <span class="section-tag">LEARN & TUTORIAL</span>
+          <h2>Understanding Naive Bayes</h2>
+        </div>
+        
+        <div class="learn-grid">
+          <div class="learn-card">
+            <div class="card-num">01</div>
+            <h3>Definition</h3>
+            <p>Naive Bayes is a <strong>probabilistic classifier</strong> based on Bayes' theorem. It assumes all features
+              are <em>conditionally independent</em> given the class — the "naive" assumption. Despite this simplicity, it
+              performs well on text classification, spam filtering, and more.</p>
+          </div>
+          <div class="learn-card">
+            <div class="card-num">02</div>
+            <h3>Bayes' Theorem</h3>
+            <div class="formula-block">
+              <p class="formula-big">P(C|X) = P(X|C) × P(C) / P(X)</p>
+            </div>
+            <ul class="term-list">
+              <li><strong>P(C|X)</strong> — Posterior probability of class C given features X</li>
+              <li><strong>P(X|C)</strong> — Likelihood: probability of X given class C</li>
+              <li><strong>P(C)</strong> — Prior probability of class C</li>
+              <li><strong>P(X)</strong> — Evidence (constant, often ignored)</li>
+            </ul>
+          </div>
+          <div class="learn-card">
+            <div class="card-num">03</div>
+            <h3>Naive Assumption</h3>
+            <p>Features are assumed independent:</p>
+            <div class="formula-block">
+              <p class="formula-big">P(X|C) = P(x₁|C) × P(x₂|C) × ... × P(xₙ|C)</p>
+            </div>
+            <p>So: <strong>Prediction = argmax P(C) × Π P(xᵢ|C)</strong></p>
+          </div>
+          <div class="learn-card">
+            <div class="card-num">04</div>
+            <h3>Gaussian Naive Bayes</h3>
+            <p>For continuous features, assume Gaussian distribution:</p>
+            <div class="formula-block">
+              <p class="formula-big">P(xᵢ|C) = (1/√2πσ²) × e^(-(xᵢ−μ)²/2σ²)</p>
+            </div>
+            <p>Mean (μ) and variance (σ²) are estimated from training data per class.</p>
+          </div>
+        </div>
 
-  <!-- ======= ABOUT SECTION ======= -->
-  <section class="content-section" id="about">
-    <div class="section-header">
-      <span class="section-tag">06 / ABOUT</span>
-      <h2>Developed By</h2>
-    </div>
-    <div class="about-card">
-      <div class="about-avatar">AS</div>
-      <div class="about-info">
-        <div class="about-name">AYUSH SINGH</div>
-        <div class="about-meta">Roll No: 24BYB1147 &nbsp;|&nbsp; Course: B.E. / B.Tech Computer Science</div>
-        <div class="about-meta">Subject: Computer Networks &nbsp;|&nbsp; Semester: IV</div>
-        <div class="about-meta">Institution: VIT</div>
-        <div class="about-year">Academic Year 2025–26</div>
-      </div>
-    </div>
+        <div class="example-block">
+          <div class="section-header">
+            <span class="section-tag">WORKED EXAMPLE</span>
+            <h2>Play Tennis Dataset</h2>
+          </div>
+          <div class="example-inner">
+            <div class="example-table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Outlook</th>
+                    <th>Temperature</th>
+                    <th>Humidity</th>
+                    <th>Wind</th>
+                    <th>Play?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Sunny</td>
+                    <td>Hot</td>
+                    <td>High</td>
+                    <td>Weak</td>
+                    <td class="no">No</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Sunny</td>
+                    <td>Hot</td>
+                    <td>High</td>
+                    <td>Strong</td>
+                    <td class="no">No</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>Overcast</td>
+                    <td>Hot</td>
+                    <td>High</td>
+                    <td>Weak</td>
+                    <td class="yes">Yes</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>Rainy</td>
+                    <td>Mild</td>
+                    <td>High</td>
+                    <td>Weak</td>
+                    <td class="yes">Yes</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>Rainy</td>
+                    <td>Cool</td>
+                    <td>Normal</td>
+                    <td>Weak</td>
+                    <td class="yes">Yes</td>
+                  </tr>
+                  <tr>
+                    <td>6</td>
+                    <td>Rainy</td>
+                    <td>Cool</td>
+                    <td>Normal</td>
+                    <td>Strong</td>
+                    <td class="no">No</td>
+                  </tr>
+                  <tr>
+                    <td>7</td>
+                    <td>Overcast</td>
+                    <td>Cool</td>
+                    <td>Normal</td>
+                    <td>Strong</td>
+                    <td class="yes">Yes</td>
+                  </tr>
+                  <tr>
+                    <td>8</td>
+                    <td>Sunny</td>
+                    <td>Mild</td>
+                    <td>High</td>
+                    <td>Weak</td>
+                    <td class="no">No</td>
+                  </tr>
+                  <tr>
+                    <td>9</td>
+                    <td>Sunny</td>
+                    <td>Cool</td>
+                    <td>Normal</td>
+                    <td>Weak</td>
+                    <td class="yes">Yes</td>
+                  </tr>
+                  <tr>
+                    <td>10</td>
+                    <td>Rainy</td>
+                    <td>Mild</td>
+                    <td>Normal</td>
+                    <td>Weak</td>
+                    <td class="yes">Yes</td>
+                  </tr>
+                  <tr>
+                    <td>11</td>
+                    <td>Sunny</td>
+                    <td>Mild</td>
+                    <td>Normal</td>
+                    <td>Strong</td>
+                    <td class="yes">Yes</td>
+                  </tr>
+                  <tr>
+                    <td>12</td>
+                    <td>Overcast</td>
+                    <td>Mild</td>
+                    <td>High</td>
+                    <td>Strong</td>
+                    <td class="yes">Yes</td>
+                  </tr>
+                  <tr>
+                    <td>13</td>
+                    <td>Overcast</td>
+                    <td>Hot</td>
+                    <td>Normal</td>
+                    <td>Weak</td>
+                    <td class="yes">Yes</td>
+                  </tr>
+                  <tr>
+                    <td>14</td>
+                    <td>Rainy</td>
+                    <td>Mild</td>
+                    <td>High</td>
+                    <td>Strong</td>
+                    <td class="no">No</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="example-steps">
+              <div class="step-card">
+                <div class="step-num">S1</div>
+                <div>
+                  <strong>Prior Probabilities</strong>
+                  <div class="prob-bars">
+                    <div class="prob-row"><span>P(Yes) = 9/14</span>
+                      <div class="bar">
+                        <div class="fill yes-fill" style="width:64%">64%</div>
+                      </div>
+                    </div>
+                    <div class="prob-row"><span>P(No) = 5/14</span>
+                      <div class="bar">
+                        <div class="fill no-fill" style="width:36%">36%</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="step-card">
+                <div class="step-num">S2</div>
+                <div>
+                  <strong style="margin-bottom:0.25rem;">Interactive Predictor</strong>
+                  <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem; font-size:11px;">
+                    <select id="ex-outlook" onchange="updateExample()"
+                      style="padding:2px; border:1px solid var(--border); border-radius:4px;">
+                      <option>Sunny</option>
+                      <option>Overcast</option>
+                      <option>Rainy</option>
+                    </select>
+                    <select id="ex-temp" onchange="updateExample()"
+                      style="padding:2px; border:1px solid var(--border); border-radius:4px;">
+                      <option>Hot</option>
+                      <option>Mild</option>
+                      <option>Cool</option>
+                    </select>
+                    <select id="ex-hum" onchange="updateExample()"
+                      style="padding:2px; border:1px solid var(--border); border-radius:4px;">
+                      <option>High</option>
+                      <option>Normal</option>
+                    </select>
+                    <select id="ex-wind" onchange="updateExample()"
+                      style="padding:2px; border:1px solid var(--border); border-radius:4px;">
+                      <option>Weak</option>
+                      <option>Strong</option>
+                    </select>
+                  </div>
+                  <p class="step-text" id="ex-calc-yes"
+                    style="font-family:var(--font-mono); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    P(Yes|...) ∝ P(Yes) × P(Sunny|Yes) × P(Hot|Yes) × P(High|Yes) × P(Weak|Yes)<br>= 9/14 × 2/9 × 2/9 × 3/9
+                    × 6/9 = 0.0071</p>
+                  <p class="step-text" id="ex-calc-no"
+                    style="font-family:var(--font-mono); font-size:11px; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    P(No|...) ∝ P(No) × P(Sunny|No) × P(Hot|No) × P(High|No) × P(Weak|No)<br>= 5/14 × 3/5 × 2/5 × 4/5 × 2/5
+                    = 0.0274</p>
+                </div>
+              </div>
+              <div class="step-card highlight-card">
+                <div class="step-num" style="background:var(--accent3);">→</div>
+                <div>
+                  <strong>Final Prediction</strong>
+                  <p class="step-text" id="ex-final">Since 0.0274 > 0.0071 → <span class="badge-no">Play = No</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <div class="about-card" style="margin-top: 1rem;">
-      <div class="about-avatar">AS</div>
-      <div class="about-info">
-        <div class="about-name">ARSHIT SINGH</div>
-        <div class="about-meta">Roll No: 24BYB1158 &nbsp;|&nbsp; Course: B.E. / B.Tech Computer Science</div>
-        <div class="about-meta">Subject: Computer Networks &nbsp;|&nbsp; Semester: IV</div>
-        <div class="about-meta">Institution: VIT</div>
-        <div class="about-year">Academic Year 2025–26</div>
+        <div class="video-section">
+          <div class="section-header">
+            <span class="section-tag">VIDEO LECTURE</span>
+            <h2>Complete Explanation</h2>
+          </div>
+          <div class="video-wrap">
+            <iframe width="100%" height="400" src="https://www.youtube.com/embed/O2L2Uv9pdDA"
+              title="Naive Bayes Classifier Explained" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="about-card" style="margin-top: 1rem;">
-      <div class="about-avatar">AS</div>
-      <div class="about-info">
-        <div class="about-name">A SWAMINATHAN</div>
-        <div class="about-meta">Role: Mentor &nbsp;|&nbsp; School: SCOPE</div>
-        <div class="about-meta">Institution: VIT</div>
+  <!-- References Modal -->
+  <div class="modal-overlay" id="modal-references">
+    <div class="modal-container">
+      <button class="modal-close" onclick="closeModal('modal-references')">&times;</button>
+      <div class="modal-body">
+        <div class="section-header">
+          <span class="section-tag">RESOURCES</span>
+          <h2>References</h2>
+        </div>
+        <div class="ref-list">
+          <div class="ref-card">
+            <div class="ref-num">01</div>
+            <div>
+              <div class="ref-title">scikit-learn: Naive Bayes Documentation</div>
+              <div class="ref-url">https://scikit-learn.org/stable/modules/naive_bayes.html</div>
+              <p>Official documentation for GaussianNB, MultinomialNB, BernoulliNB implementations in Python.</p>
+            </div>
+          </div>
+          <div class="ref-card">
+            <div class="ref-num">02</div>
+            <div>
+              <div class="ref-title">Mitchell, T. M. (1997). Machine Learning. McGraw-Hill.</div>
+              <div class="ref-url">Chapter 6: Bayesian Learning</div>
+              <p>Foundational textbook chapter covering Bayes theorem, MAP hypothesis, and Naive Bayes classifiers.</p>
+            </div>
+          </div>
+          <div class="ref-card">
+            <div class="ref-num">03</div>
+            <div>
+              <div class="ref-title">Wikipedia — Naive Bayes Classifier</div>
+              <div class="ref-url">https://en.wikipedia.org/wiki/Naive_Bayes_classifier</div>
+              <p>Comprehensive overview with mathematical formulation, types, and applications.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="about-desc">
-      <p>This Virtual Lab was developed as part of the Cybersecurity course to demonstrate the Naive Bayes probabilistic
-        classifier through an interactive, browser-based interface. It allows students to upload their own datasets,
-        visualize step-by-step probability computations, and evaluate model performance.</p>
+  </div>
+
+  <!-- Help Modal -->
+  <div class="modal-overlay" id="modal-help">
+    <div class="modal-container">
+      <button class="modal-close" onclick="closeModal('modal-help')">&times;</button>
+      <div class="modal-body">
+        <div class="section-header">
+          <span class="section-tag">GUIDE</span>
+          <h2>How to Use This Lab</h2>
+        </div>
+        <div class="help-grid">
+          <div class="help-card">
+            <div class="help-step">1</div>
+            <h3>Prepare Your Dataset</h3>
+            <p>Your CSV file must follow this format:</p>
+            <div class="code-block">Feature1, Feature2, ..., Label
+              Sunny, Hot, High, Yes
+              Rainy, Cool, Normal, No</div>
+          </div>
+          <div class="help-card">
+            <div class="help-step">2</div>
+            <h3>Upload or Use Sample</h3>
+            <p>Go to the <strong>Lab</strong> section and either click <em>Upload</em> or <em>Try Demo</em>.</p>
+          </div>
+        </div>
+      </div>
     </div>
-  </section>
+  </div>
+
+  <!-- About Modal -->
+  <div class="modal-overlay" id="modal-about">
+    <div class="modal-container">
+      <button class="modal-close" onclick="closeModal('modal-about')">&times;</button>
+      <div class="modal-body">
+        <div class="section-header">
+          <span class="section-tag">DEVELOPERS</span>
+          <h2>Developed By</h2>
+        </div>
+        <div class="about-card">
+          <div class="about-avatar">AS</div>
+          <div class="about-info">
+            <div class="about-name">AYUSH SINGH</div>
+            <div class="about-meta">Roll No: 24BYB1147 &nbsp;|&nbsp; VIT</div>
+          </div>
+        </div>
+        <div class="about-card" style="margin-top: 1rem;">
+          <div class="about-avatar">AS</div>
+          <div class="about-info">
+            <div class="about-name">ARSHIT SINGH</div>
+            <div class="about-meta">Roll No: 24BYB1158 &nbsp;|&nbsp; VIT</div>
+          </div>
+        </div>
+        <div class="about-card" style="margin-top: 1rem;">
+          <div class="about-avatar">AS</div>
+          <div class="about-info">
+            <div class="about-name">A SWAMINATHAN</div>
+            <div class="about-meta">Role: Mentor &nbsp;|&nbsp; School: SCOPE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="/static/script.js"></script>
 </body>
